@@ -298,10 +298,10 @@ def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres):
     gw, gh = gwh.t()
     gi, gj = gxy.long().t()
     ########[TEST]
-    gi[gi < 0] = 0
-    gj[gj < 0] = 0
-    gi[gi > nG - 1] = nG -1
-    gj[gj > nG - 1] = nG -1
+    # gi[gi < 0] = 0
+    # gj[gj < 0] = 0
+    # gi[gi > nG - 1] = nG -1
+    # gj[gj > nG - 1] = nG -1
     #######
     # Set masks
     obj_mask[b, best_n, gj, gi] = 1
