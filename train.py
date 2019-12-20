@@ -49,6 +49,7 @@ if __name__ == "__main__":
     # Get data configuration
     data_config = parse_data_config(opt.data_config)
     train_path = data_config["train"]
+    label_path = data_config["label"]
     valid_path = data_config["valid"]
     class_names = load_classes(data_config["names"])
 
@@ -64,7 +65,7 @@ if __name__ == "__main__":
             model.load_darknet_weights(opt.pretrained_weights)
 
     # Get dataloader
-    dataset = ListDataset(train_path, augment=True, multiscale=opt.multiscale_training)
+    dataset = ListDataset(train_path, label_path, augment=True, multiscale=opt.multiscale_training)
     dataloader = torch.utils.data.DataLoader(
         dataset,
         batch_size=opt.batch_size,

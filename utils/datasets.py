@@ -58,14 +58,17 @@ class ImageFolder(Dataset):
 
 
 class ListDataset(Dataset):
-    def __init__(self, list_path, img_size=416, augment=True, multiscale=True, normalized_labels=True):
+    def __init__(self, list_path, label_list_path, img_size=416, augment=True, multiscale=True, normalized_labels=True):
         with open(list_path, "r") as file:
             self.img_files = file.readlines()
 
-        self.label_files = [
-            path.replace("images", "labels").replace(".png", ".txt").replace(".jpg", ".txt")
-            for path in self.img_files
-        ]
+        # self.label_files = [
+        #     path.replace("images", "labels").replace(".png", ".txt").replace(".jpg", ".txt")
+        #     for path in self.img_files
+        # ]
+        with open(label_list_path, "r") as file:
+            self.label_files = file.readlines()
+
         self.img_size = img_size
         self.max_objects = 100
         self.augment = augment
@@ -101,11 +104,16 @@ class ListDataset(Dataset):
         #  Label
         # ---------
 
-        label_path = self.label_files[index % len(self.img_files)].rstrip()
+        label_num = img_path.split('/')[-1].split('-')[0]
+        print('label_num:', int(label_num))
+        # label_path = self.label_files[index % len(self.img_files)].rstrip()
+        label_path = self.label_files[int(label_num)].rstrip()
+        print('label_path:', label_path)
 
         targets = None
         if os.path.exists(label_path):
-            boxes = torch.from_numpy(np.loadtxt(label_path).reshape(-1, 5))
+            print(np.loadtxt(label_path)[index])
+            boxes = torch.from_numpy(np.loadtxt(label_path)[index].reshape(-1, 5))
             # Extract coordinates for unpadded + unscaled image
             x1 = w_factor * (boxes[:, 1] - boxes[:, 3] / 2)
             y1 = h_factor * (boxes[:, 2] - boxes[:, 4] / 2)
