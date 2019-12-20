@@ -109,11 +109,12 @@ class ListDataset(Dataset):
         # label_path = self.label_files[index % len(self.img_files)].rstrip()
         label_path = self.label_files[int(label_num)].rstrip()
         print('label_path:', label_path)
+        print('index:', index)
 
         targets = None
         if os.path.exists(label_path):
-            print(np.loadtxt(label_path)[index % len(self.img_files)])
-            boxes = torch.from_numpy(np.loadtxt(label_path)[index % len(self.img_files)].reshape(-1, 5))
+            print(np.loadtxt(label_path)[index % len(self.label_files)])
+            boxes = torch.from_numpy(np.loadtxt(label_path)[index % len(self.label_files)].reshape(-1, 5))
             # Extract coordinates for unpadded + unscaled image
             x1 = w_factor * (boxes[:, 1] - boxes[:, 3] / 2)
             y1 = h_factor * (boxes[:, 2] - boxes[:, 4] / 2)
