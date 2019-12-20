@@ -48,9 +48,13 @@ if __name__ == "__main__":
         model.load_darknet_weights(opt.weights_path)
     else:
         # Load checkpoint weights
-        model.load_state_dict(torch.load(opt.weights_path))
+        model.load_state_dict(torch.load(opt.weights_path, map_location='cpu'))
 
     model.eval()  # Set in evaluation mode
+
+    checkpoint = torch.load(opt.weights_path, map_location='cpu')
+    # for s in list(checkpoint.keys()):
+    #     print(s)
 
     dataloader = DataLoader(
         ImageFolder(opt.image_folder, img_size=opt.img_size),
@@ -134,6 +138,7 @@ if __name__ == "__main__":
 
         # Save generated image with detections
         plt.axis("off")
+        plt.style.use('grayscale')
         plt.gca().xaxis.set_major_locator(NullLocator())
         plt.gca().yaxis.set_major_locator(NullLocator())
         filename = path.split("/")[-1].split(".")[0]
