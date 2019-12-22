@@ -98,7 +98,8 @@ if __name__ == "__main__":
     for epoch in range(opt.epochs):
         model.train()
         start_time = time.time()
-        for batch_i, (_, imgs, targets) in enumerate(dataloader):
+        for batch_i, (img_path, imgs, targets) in enumerate(dataloader):
+            print('img_path:', img_path)
             batches_done = len(dataloader) * epoch + batch_i
 
             imgs = Variable(imgs.to(device))
