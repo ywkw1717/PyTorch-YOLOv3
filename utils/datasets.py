@@ -85,8 +85,8 @@ class ListDataset(Dataset):
         # ---------
 
         img_path = self.img_files[index % len(self.img_files)].rstrip()
-        # print('--- In ListDataset ---')
-        # print('img_path:', img_path)
+        print('--- In ListDataset ---')
+        print('img_path:', img_path)
 
         # Extract image as PyTorch tensor
         img = transforms.ToTensor()(Image.open(img_path).convert('RGB'))
