@@ -20,11 +20,11 @@ from torch.autograd import Variable
 import torch.optim as optim
 
 
-def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size):
+def evaluate(model, valid_path, label_path, iou_thres, conf_thres, nms_thres, img_size, batch_size):
     model.eval()
 
     # Get dataloader
-    dataset = ListDataset(path, img_size=img_size, augment=False, multiscale=False)
+    dataset = ListDataset(valid_path, label_path, img_size=img_size, augment=False, multiscale=False)
     dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, shuffle=False, num_workers=1, collate_fn=dataset.collate_fn
     )
@@ -75,6 +75,7 @@ if __name__ == "__main__":
 
     data_config = parse_data_config(opt.data_config)
     valid_path = data_config["valid"]
+    label_path = data_config["label"]
     class_names = load_classes(data_config["names"])
 
     # Initiate model
@@ -90,7 +91,8 @@ if __name__ == "__main__":
 
     precision, recall, AP, f1, ap_class = evaluate(
         model,
-        path=valid_path,
+        valid_path=valid_path,
+        label_path=label_path,
         iou_thres=opt.iou_thres,
         conf_thres=opt.conf_thres,
         nms_thres=opt.nms_thres,

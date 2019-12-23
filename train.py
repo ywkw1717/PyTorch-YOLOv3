@@ -154,7 +154,8 @@ if __name__ == "__main__":
             # Evaluate the model on the validation set
             precision, recall, AP, f1, ap_class = evaluate(
                 model,
-                path=valid_path,
+                valid_path=valid_path,
+                label_path=label_path,
                 iou_thres=0.5,
                 conf_thres=0.5,
                 nms_thres=0.5,
