@@ -89,7 +89,11 @@ class ListDataset(Dataset):
         # print('img_path:', img_path)
 
         # Extract image as PyTorch tensor
-        img = transforms.ToTensor()(Image.open(img_path).convert('RGB'))
+        try:
+            img = transforms.ToTensor()(Image.open(img_path).convert('RGB'))
+        except OSError as e:
+            print(e)
+            print(img_path)
 
         # Handle images with less than three channels
         if len(img.shape) != 3:
