@@ -61,8 +61,12 @@ if __name__ == "__main__":
     if opt.pretrained_weights:
         if opt.pretrained_weights.endswith(".pth"):
             model.load_state_dict(torch.load(opt.pretrained_weights))
+            first_epoch = int(opt.pretrained_weights.split('_')[2])
         else:
             model.load_darknet_weights(opt.pretrained_weights)
+            first_epoch = 0
+
+    print('first_epoch:', first_epoch)
 
     # Get dataloader
     dataset = ListDataset(train_path, label_path, augment=True, multiscale=opt.multiscale_training)
@@ -95,7 +99,7 @@ if __name__ == "__main__":
         "conf_noobj",
     ]
 
-    for epoch in range(opt.epochs):
+    for epoch in range(first_epoch, opt.epochs):
         model.train()
         start_time = time.time()
         for batch_i, (img_path, imgs, targets) in enumerate(dataloader):
