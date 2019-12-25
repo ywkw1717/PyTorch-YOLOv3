@@ -66,7 +66,7 @@ if __name__ == "__main__":
             model.load_darknet_weights(opt.pretrained_weights)
             first_epoch = 0
 
-    print('first_epoch:', first_epoch)
+    print('Starting from:', first_epoch)
 
     # Get dataloader
     dataset = ListDataset(train_path, label_path, augment=True, multiscale=opt.multiscale_training)
