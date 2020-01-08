@@ -101,12 +101,12 @@ if __name__ == "__main__":
     )
 
     print("Average Precisions:")
-    with open('AP_log.txt', 'a') as f:
+    with open('AP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
         for i, c in enumerate(ap_class):
             # print(f"+ Class '{c}' ({class_names[c]}) - AP: {AP[i]}")
             f.write(class_names[c] + ':' + str(AP[i]) + ',')  # csv
         f.write('\n')
 
-    with open('mAP_log.txt', 'a') as f:
+    with open('mAP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
         # print(f"mAP: {AP.mean()}")
         f.write(str(AP.mean()) + '\n')
