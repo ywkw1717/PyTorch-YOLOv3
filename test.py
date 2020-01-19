@@ -99,17 +99,17 @@ if __name__ == "__main__":
         img_size=opt.img_size,
         batch_size=8,
     )
-    print("Average Precisions:")
-
-    for i, c in enumerate(ap_class):
-        print(f"+ Class '{c}' ({class_names[c]}) - AP: {AP[i]}")
-
-    print(f"mAP: {AP.mean()}")
-
-    # with open('AP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
-    #     for i, c in enumerate(ap_class):
-    #         f.write(class_names[c] + ':' + str(AP[i]) + ',')  # csv
-    #     f.write('\n')
+    # print("Average Precisions:")
     #
-    # with open('mAP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
-    #     f.write(str(AP.mean()) + '\n')
+    # for i, c in enumerate(ap_class):
+    #     print(f"+ Class '{c}' ({class_names[c]}) - AP: {AP[i]}")
+    #
+    # print(f"mAP: {AP.mean()}")
+
+    with open('AP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
+        for i, c in enumerate(ap_class):
+            f.write(class_names[c] + ':' + str(AP[i]) + ',')  # csv
+        f.write('\n')
+
+    with open('mAP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
+        f.write(str(AP.mean()) + '\n')
