@@ -49,7 +49,6 @@ def evaluate(model, valid_path, label_path, iou_thres, conf_thres, nms_thres, im
 
         sample_metrics += get_batch_statistics(outputs, targets, iou_threshold=iou_thres)
 
-    print(sample_metrics)
     # Concatenate sample statistics
     true_positives, pred_scores, pred_labels = [np.concatenate(x, 0) for x in list(zip(*sample_metrics))]
     precision, recall, AP, f1, ap_class = ap_per_class(true_positives, pred_scores, pred_labels, labels)
