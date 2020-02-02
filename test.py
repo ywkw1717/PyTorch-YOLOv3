@@ -50,10 +50,15 @@ def evaluate(model, path, iou_thres, conf_thres, nms_thres, img_size, batch_size
         sample_metrics += get_batch_statistics(outputs, targets, iou_threshold=iou_thres)
 
     # Concatenate sample statistics
-    true_positives, pred_scores, pred_labels = [np.concatenate(x, 0) for x in list(zip(*sample_metrics))]
+    true_positives, pred_scores, pred_labels, ious = [np.concatenate(x, 0) for x in list(zip(*sample_metrics))]  # pred_scores is object_conf (output[:, 4]) output[:, 5] is class_score
     precision, recall, AP, f1, ap_class = ap_per_class(true_positives, pred_scores, pred_labels, labels)
+    # ap_per_class Arguments
+        # tp:    True positives (list).
+        # conf:  Objectness value from 0-1 (list).
+        # pred_cls: Predicted object classes (list).
+        # target_cls: True object classes (list).
 
-    return precision, recall, AP, f1, ap_class
+    return precision, recall, AP, f1, ap_class, ious
 
 
 if __name__ == "__main__":
@@ -84,11 +89,12 @@ if __name__ == "__main__":
         model.load_darknet_weights(opt.weights_path)
     else:
         # Load checkpoint weights
-        model.load_state_dict(torch.load(opt.weights_path))
+        # model.load_state_dict(torch.load(opt.weights_path))
+        model.load_state_dict(torch.load(opt.weights_path, map_location=torch.device('cpu')))
 
     print("Compute mAP...")
 
-    precision, recall, AP, f1, ap_class = evaluate(
+    precision, recall, AP, f1, ap_class, ious = evaluate(
         model,
         path=valid_path,
         iou_thres=opt.iou_thres,
@@ -97,9 +103,40 @@ if __name__ == "__main__":
         img_size=opt.img_size,
         batch_size=8,
     )
+<<<<<<< Updated upstream
 
     print("Average Precisions:")
+=======
+    print("Average Precisions:")
+
+>>>>>>> Stashed changes
     for i, c in enumerate(ap_class):
         print(f"+ Class '{c}' ({class_names[c]}) - AP: {AP[i]}")
 
     print(f"mAP: {AP.mean()}")
+<<<<<<< Updated upstream
+=======
+
+    print("ious:")
+    print(ious)
+
+    print("mean average ious:")
+    print(ious.mean())
+
+    print("precision:")
+    print(precision)
+
+    print("recall:")
+    print(recall)
+
+    print("f1:")
+    print(f1)
+
+    # with open('AP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
+    #     for i, c in enumerate(ap_class):
+    #         f.write(class_names[c] + ':' + str(AP[i]) + ',')  # csv
+    #     f.write('\n')
+    #
+    # with open('mAP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
+    #     f.write(str(AP.mean()) + '\n')
+>>>>>>> Stashed changes
