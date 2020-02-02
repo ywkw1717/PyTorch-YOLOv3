@@ -60,8 +60,12 @@ if __name__ == "__main__":
     if opt.pretrained_weights:
         if opt.pretrained_weights.endswith(".pth"):
             model.load_state_dict(torch.load(opt.pretrained_weights))
+            first_epoch = int(opt.pretrained_weights.split('_')[2]) + 1
         else:
             model.load_darknet_weights(opt.pretrained_weights)
+            first_epoch = 0
+
+    print('Starting from:', first_epoch)
 
     # Get dataloader
     dataset = ListDataset(train_path, augment=True, multiscale=opt.multiscale_training)
@@ -93,7 +97,7 @@ if __name__ == "__main__":
         "conf_noobj",
     ]
 
-    for epoch in range(opt.epochs):
+    for epoch in range(first_epoch, opt.epochs):
         model.train()
         start_time = time.time()
         for batch_i, (_, imgs, targets) in enumerate(dataloader):
@@ -135,44 +139,45 @@ if __name__ == "__main__":
                 tensorboard_log += [("loss", loss.item())]
                 # logger.list_of_scalars_summary(tensorboard_log, batches_done)
 
-            log_str += AsciiTable(metric_table).table
+            # log_str += AsciiTable(metric_table).table
             log_str += f"\nTotal loss {loss.item()}"
 
             # Determine approximate time left for epoch
             epoch_batches_left = len(dataloader) - (batch_i + 1)
             time_left = datetime.timedelta(seconds=epoch_batches_left * (time.time() - start_time) / (batch_i + 1))
-            log_str += f"\n---- ETA {time_left}"
+            # log_str += f"\n---- ETA {time_left}"
 
-            print(log_str)
+            # print(log_str)
 
             model.seen += imgs.size(0)
 
-        if epoch % opt.evaluation_interval == 0:
-            print("\n---- Evaluating Model ----")
-            # Evaluate the model on the validation set
-            precision, recall, AP, f1, ap_class = evaluate(
-                model,
-                path=valid_path,
-                iou_thres=0.5,
-                conf_thres=0.5,
-                nms_thres=0.5,
-                img_size=opt.img_size,
-                batch_size=8,
-            )
-            evaluation_metrics = [
-                ("val_precision", precision.mean()),
-                ("val_recall", recall.mean()),
-                ("val_mAP", AP.mean()),
-                ("val_f1", f1.mean()),
-            ]
-            logger.list_of_scalars_summary(evaluation_metrics, epoch)
-
-            # Print class APs and mAP
-            ap_table = [["Index", "Class name", "AP"]]
-            for i, c in enumerate(ap_class):
-                ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
-            print(AsciiTable(ap_table).table)
-            print(f"---- mAP {AP.mean()}")
+        # if epoch % opt.evaluation_interval == 0:
+        #     print("\n---- Evaluating Model ----")
+        #     # Evaluate the model on the validation set
+        #     precision, recall, AP, f1, ap_class = evaluate(
+        #         model,
+        #         path=valid_path,
+        #         iou_thres=0.5,
+        #         conf_thres=0.5,
+        #         nms_thres=0.5,
+        #         img_size=opt.img_size,
+        #         batch_size=8,
+        #     )
+        #     evaluation_metrics = [
+        #         ("val_precision", precision.mean()),
+        #         ("val_recall", recall.mean()),
+        #         ("val_mAP", AP.mean()),
+        #         ("val_f1", f1.mean()),
+        #     ]
+        #     logger.list_of_scalars_summary(evaluation_metrics, epoch)
+        #
+        #     # Print class APs and mAP
+        #     ap_table = [["Index", "Class name", "AP"]]
+        #     for i, c in enumerate(ap_class):
+        #         ap_table += [[c, class_names[c], "%.5f" % AP[i]]]
+        #     print(AsciiTable(ap_table).table)
+        #     print(f"---- mAP {AP.mean()}")
 
         if epoch % opt.checkpoint_interval == 0:
-            torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_%d.pth" % epoch)
+            torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_%d_{loss.item()}.pth" % epoch)
+            print('epoch: %d, loss: {loss.item()}' % epoch)

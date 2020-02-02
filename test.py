@@ -103,34 +103,13 @@ if __name__ == "__main__":
         img_size=opt.img_size,
         batch_size=8,
     )
-<<<<<<< Updated upstream
 
     print("Average Precisions:")
-=======
-    print("Average Precisions:")
 
->>>>>>> Stashed changes
     for i, c in enumerate(ap_class):
         print(f"+ Class '{c}' ({class_names[c]}) - AP: {AP[i]}")
 
     print(f"mAP: {AP.mean()}")
-<<<<<<< Updated upstream
-=======
-
-    print("ious:")
-    print(ious)
-
-    print("mean average ious:")
-    print(ious.mean())
-
-    print("precision:")
-    print(precision)
-
-    print("recall:")
-    print(recall)
-
-    print("f1:")
-    print(f1)
 
     # with open('AP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
     #     for i, c in enumerate(ap_class):
@@ -139,4 +118,3 @@ if __name__ == "__main__":
     #
     # with open('mAP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
     #     f.write(str(AP.mean()) + '\n')
->>>>>>> Stashed changes
