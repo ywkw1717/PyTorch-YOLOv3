@@ -80,6 +80,8 @@ if __name__ == "__main__":
         with torch.no_grad():
             detections = model(input_imgs)
             detections = non_max_suppression(detections, opt.conf_thres, opt.nms_thres)
+            # non_max_suppression Returns detections with shape:
+            #     (x1, y1, x2, y2, object_conf, class_score, class_pred)
 
         # Log progress
         current_time = time.time()
@@ -114,9 +116,20 @@ if __name__ == "__main__":
             unique_labels = detections[:, -1].cpu().unique()
             n_cls_preds = len(unique_labels)
             bbox_colors = random.sample(colors, n_cls_preds)
+            # print("detections: ", detections)
             for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
+                # conf: object_conf
+                # cls_conf: class_score
+                # cls_pred: class_pred
 
                 print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
+
+                # # Modify bounding box
+                # x1 = torch.tensor(0)
+                # y1 = torch.tensor(0)
+                # x2 = torch.tensor(img.shape[1])
+                #
+                # print(x1, x2, y1, y2)
 
                 box_w = x2 - x1
                 box_h = y2 - y1
