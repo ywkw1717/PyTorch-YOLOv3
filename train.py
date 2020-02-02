@@ -149,7 +149,7 @@ if __name__ == "__main__":
             time_left = datetime.timedelta(seconds=epoch_batches_left * (time.time() - start_time) / (batch_i + 1))
             # log_str += f"\n---- ETA {time_left}"
 
-            print(log_str)
+            # print(log_str)
 
             model.seen += imgs.size(0)
 
@@ -185,3 +185,4 @@ if __name__ == "__main__":
         if epoch % opt.checkpoint_interval == 0:
             # torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_%d_{loss.item()}_{AP.mean()}.pth" % epoch)
             torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_%d_{loss.item()}.pth" % epoch)
+            print('epoch: %d, loss: {loss.item()}' % epoch)
