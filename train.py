@@ -73,7 +73,8 @@ if __name__ == "__main__":
         dataset,
         batch_size=opt.batch_size,
         shuffle=True,
-        num_workers=opt.n_cpu,
+        # num_workers=opt.n_cpu,
+        num_workers=0,
         pin_memory=True,
         collate_fn=dataset.collate_fn,
     )
