@@ -59,7 +59,7 @@ def xywh2xyxy(x):
     return y
 
 
-def ap_per_class(tp, conf, pred_cls, target_cls):
+def ap_per_class(tp, conf, pred_cls, target_cls, ious):
     """ Compute the average precision, given the recall and precision curves.
     Source: https://github.com/rafaelpadilla/Object-Detection-Metrics.
     # Arguments
@@ -73,13 +73,13 @@ def ap_per_class(tp, conf, pred_cls, target_cls):
 
     # Sort by objectness
     i = np.argsort(-conf)
-    tp, conf, pred_cls = tp[i], conf[i], pred_cls[i]
+    tp, conf, pred_cls, ious = tp[i], conf[i], pred_cls[i], ious[i]
 
     # Find unique classes
     unique_classes = np.unique(target_cls)
 
     # Create Precision-Recall curve and compute AP for each class
-    ap, p, r = [], [], []
+    ap, p, r, iou = [], [], [], []
     for c in tqdm.tqdm(unique_classes, desc="Computing AP"):
         i = pred_cls == c
         n_gt = (target_cls == c).sum()  # Number of ground truth objects
@@ -91,10 +91,12 @@ def ap_per_class(tp, conf, pred_cls, target_cls):
             ap.append(0)
             r.append(0)
             p.append(0)
+            iou.append(0)
         else:
             # Accumulate FPs and TPs
             fpc = (1 - tp[i]).cumsum()
             tpc = (tp[i]).cumsum()
+            iouc = (ious[i]).cumsum()
 
             # Recall
             recall_curve = tpc / (n_gt + 1e-16)
@@ -107,11 +109,13 @@ def ap_per_class(tp, conf, pred_cls, target_cls):
             # AP from recall-precision curve
             ap.append(compute_ap(recall_curve, precision_curve))
 
+            iou.append(iouc[-1] / len(iouc))
+
     # Compute F1 score (harmonic mean of precision and recall)
-    p, r, ap = np.array(p), np.array(r), np.array(ap)
+    p, r, ap, iou = np.array(p), np.array(r), np.array(ap), np.array(iou)
     f1 = 2 * p * r / (p + r + 1e-16)
 
-    return p, r, ap, f1, unique_classes.astype("int32")
+    return p, r, ap, f1, unique_classes.astype("int32"), iou
 
 
 def compute_ap(recall, precision):
@@ -156,6 +160,7 @@ def get_batch_statistics(outputs, targets, iou_threshold):
         pred_labels = output[:, -1]
 
         true_positives = np.zeros(pred_boxes.shape[0])
+        ious = np.zeros(pred_boxes.shape[0])
 
         annotations = targets[targets[:, 0] == sample_i][:, 1:]
         target_labels = annotations[:, 0] if len(annotations) else []
@@ -177,7 +182,8 @@ def get_batch_statistics(outputs, targets, iou_threshold):
                 if iou >= iou_threshold and box_index not in detected_boxes:
                     true_positives[pred_i] = 1
                     detected_boxes += [box_index]
-        batch_metrics.append([true_positives, pred_scores, pred_labels])
+                    ious[pred_i] = iou
+        batch_metrics.append([true_positives, pred_scores, pred_labels, ious])
     return batch_metrics
 
 

@@ -50,10 +50,10 @@ def evaluate(model, valid_path, label_path, iou_thres, conf_thres, nms_thres, im
         sample_metrics += get_batch_statistics(outputs, targets, iou_threshold=iou_thres)
 
     # Concatenate sample statistics
-    true_positives, pred_scores, pred_labels = [np.concatenate(x, 0) for x in list(zip(*sample_metrics))]
-    precision, recall, AP, f1, ap_class = ap_per_class(true_positives, pred_scores, pred_labels, labels)
+    true_positives, pred_scores, pred_labels, ious = [np.concatenate(x, 0) for x in list(zip(*sample_metrics))]
+    precision, recall, AP, f1, ap_class, iou = ap_per_class(true_positives, pred_scores, pred_labels, labels, ious)
 
-    return precision, recall, AP, f1, ap_class
+    return precision, recall, AP, f1, ap_class, iou
 
 
 if __name__ == "__main__":
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     print("Compute mAP...")
 
-    precision, recall, AP, f1, ap_class = evaluate(
+    precision, recall, AP, f1, ap_class, iou = evaluate(
         model,
         valid_path=valid_path,
         label_path=label_path,
@@ -102,17 +102,21 @@ if __name__ == "__main__":
         img_size=opt.img_size,
         batch_size=8,
     )
-    # print("Average Precisions:")
-    #
+    print("Average Precisions:")
+
     # for i, c in enumerate(ap_class):
     #     print(f"+ Class '{c}' ({class_names[c]}) - AP: {AP[i]}")
     #
-    # print(f"mAP: {AP.mean()}")
+    # print('AP:', AP)
+    print(f"mAP: {AP.mean()}")
+
+    # print('IoU:', iou)
+    print(f"mIoU: {iou.mean()}")
 
     with open('AP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
         for i, c in enumerate(ap_class):
             f.write(class_names[c] + ':' + str(AP[i]) + ',')  # csv
         f.write('\n')
 
-    with open('mAP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
-        f.write(str(AP.mean()) + '\n')
+    with open('mAP_and_mIoU_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
+        f.write(str(AP.mean()) + ',' + str(iou.mean()) + '\n')  # csv
