@@ -113,10 +113,17 @@ if __name__ == "__main__":
     # print('IoU:', iou)
     print(f"mIoU: {iou.mean()}")
 
-    with open('AP_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
+    ap_log = 'AP_log_' + str(opt.conf_thres) + '.txt'
+    map_and_miou_log = 'mAP_and_mIoU_log_' + str(opt.conf_thres) + '.txt'
+
+    for s in [ap_log, map_and_miou_log]:
+        if os.path.isfile(s):
+            os.remove(s)
+
+    with open(ap_log, 'a') as f:
         for i, c in enumerate(ap_class):
             f.write(class_names[c] + ':' + str(AP[i]) + ',')  # csv
         f.write('\n')
 
-    with open('mAP_and_mIoU_log_' + str(opt.conf_thres) + '.txt', 'a') as f:
+    with open(map_and_miou_log, 'a') as f:
         f.write(str(AP.mean()) + ',' + str(iou.mean()) + '\n')  # csv
