@@ -5,12 +5,16 @@ import sys
 
 
 # How to use:
-# python3 all-test.py checkpoints_path conf_thres
+# python3 all-test.py data_path checkpoints_path conf_thres
 def main():
-    f = glob.glob(sys.argv[1] + '/*')
+    data_path = sys.argv[1]
+    checkpoints_path = sys.argv[2]
+    conf_thres = sys.argv[3]
+
+    f = glob.glob(checkpoints_path + '/*')
     for s in f:
         print(s)
-        os.system('python3 -W ignore:UserWarning test.py --model_def config/malimg.cfg --data_config config/malimg.data --weights_path ' + s + ' --conf_thres ' + sys.argv[2])
+        os.system('python3 -W ignore:UserWarning test.py --model_def config/malimg.cfg --data_config ' + data_path + ' --weights_path ' + s + ' --conf_thres ' + conf_thres)
 
 
 if __name__ == "__main__":
