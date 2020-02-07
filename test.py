@@ -116,9 +116,9 @@ if __name__ == "__main__":
     ap_log = 'AP_log_' + str(opt.conf_thres) + '.txt'
     map_and_miou_log = 'mAP_and_mIoU_log_' + str(opt.conf_thres) + '.txt'
 
-    for s in [ap_log, map_and_miou_log]:
-        if os.path.isfile(s):
-            os.remove(s)
+    # for s in [ap_log, map_and_miou_log]:
+    #     if os.path.isfile(s):
+    #         os.remove(s)
 
     with open(ap_log, 'a') as f:
         for i, c in enumerate(ap_class):
