@@ -2,6 +2,7 @@
 import os
 import glob
 import sys
+import re
 
 
 # How to use:
@@ -12,6 +13,8 @@ def main():
     conf_thres = sys.argv[3]
 
     f = glob.glob(checkpoints_path + '/*')
+    f = sorted(f, key=lambda x: int(re.findall(r"\d+", os.path.basename(x))[1]))
+
     for s in f:
         print(s)
         os.system('python3 -W ignore:UserWarning test.py --model_def config/malimg.cfg --data_config ' + data_path + ' --weights_path ' + s + ' --conf_thres ' + conf_thres)
