@@ -102,6 +102,7 @@ if __name__ == "__main__":
     for epoch in range(first_epoch, opt.epochs):
         model.train()
         start_time = time.time()
+        all_loss = 0
         for batch_i, (img_path, imgs, targets) in enumerate(dataloader):
             batches_done = len(dataloader) * epoch + batch_i
 
@@ -144,6 +145,9 @@ if __name__ == "__main__":
             # log_str += AsciiTable(metric_table).table
             log_str += f"\nTotal loss {loss.item()}"
 
+            # Sum loss
+            all_loss += loss.item()
+
             # Determine approximate time left for epoch
             epoch_batches_left = len(dataloader) - (batch_i + 1)
             time_left = datetime.timedelta(seconds=epoch_batches_left * (time.time() - start_time) / (batch_i + 1))
@@ -156,7 +160,7 @@ if __name__ == "__main__":
         # if epoch % opt.evaluation_interval == 0:
         #     print("\n---- Evaluating Model ----")
         #     # Evaluate the model on the validation set
-        #     precision, recall, AP, f1, ap_class = evaluate(
+        #     precision, recall, AP, f1, ap_class, ious = evaluate(
         #         model,
         #         valid_path=valid_path,
         #         label_path=label_path,
@@ -184,5 +188,6 @@ if __name__ == "__main__":
 
         if epoch % opt.checkpoint_interval == 0:
             # torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_%d_{loss.item()}_{AP.mean()}.pth" % epoch)
-            torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_%d_{loss.item()}.pth" % epoch)
-            print(f'epoch: %d, loss: {loss.item()}' % epoch)
+            loss_avg = all_loss / len(dataloader)
+            torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_{epoch}_{loss_avg}.pth")
+            print(f'epoch: {epoch}, loss_avg: {loss_avg}')
