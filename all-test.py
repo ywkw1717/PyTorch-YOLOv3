@@ -6,14 +6,18 @@ import re
 
 
 # How to use:
-# python3 all-test.py data_path checkpoints_path conf_thres
+# python3 all-test.py data_path checkpoints_path conf_thres starting_from
 def main():
     data_path = sys.argv[1]
     checkpoints_path = sys.argv[2]
     conf_thres = sys.argv[3]
+    starting_from = int(sys.argv[4])
 
     f = glob.glob(checkpoints_path + '/*')
     f = sorted(f, key=lambda x: int(re.findall(r"\d+", os.path.basename(x))[1]))
+
+    for i in range(starting_from):
+        f.pop(0)
 
     for s in f:
         print(s)
