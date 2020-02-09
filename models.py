@@ -189,6 +189,7 @@ class YOLOLayer(nn.Module):
             )
 
             print(obj_mask.shape)
+            print(obj_mask[-1][-1])
             obj_mask = obj_mask.bool()
             noobj_mask = noobj_mask.bool()
 
