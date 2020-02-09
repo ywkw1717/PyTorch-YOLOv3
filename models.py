@@ -188,8 +188,7 @@ class YOLOLayer(nn.Module):
                 ignore_thres=self.ignore_thres,
             )
 
-            print(obj_mask.shape)
-            print(obj_mask[-1][-1])
+            # If "AttributeError: 'Tensor' object has no attribute 'bool'" happening, use torch.cuda.ByteTensor
             obj_mask = obj_mask.bool()
             noobj_mask = noobj_mask.bool()
 
