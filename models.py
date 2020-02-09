@@ -188,6 +188,7 @@ class YOLOLayer(nn.Module):
                 ignore_thres=self.ignore_thres,
             )
 
+            print(obj_mask.shape)
             obj_mask = obj_mask.bool()
             noobj_mask = noobj_mask.bool()
 
