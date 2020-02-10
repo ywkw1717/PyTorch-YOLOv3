@@ -21,6 +21,7 @@ from torchvision import datasets
 from torchvision import transforms
 from torch.autograd import Variable
 import torch.optim as optim
+from tqdm import tqdm
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -103,7 +104,7 @@ if __name__ == "__main__":
         model.train()
         start_time = time.time()
         all_loss = 0
-        for batch_i, (img_path, imgs, targets) in enumerate(dataloader):
+        for batch_i, (img_path, imgs, targets) in enumerate(tqdm(dataloader)):
             batches_done = len(dataloader) * epoch + batch_i
 
             imgs = Variable(imgs.to(device))
